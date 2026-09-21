@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Заказ-наряд ПрофЭлектро — цифровой наряд на телефоне</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#191d24;
+  --navy:#252b34;
+  --navy-2:#323944;
+  --teal:#3AA7CE;
+  --teal-bright:#6FCBEE;
+  --teal-dim:rgba(58,167,206,0.16);
+  --amber:#E0A23D;
+  --paper:#F3F5F7;
+  --paper-2:#FFFFFF;
+  --line:#DEE3E7;
+  --line-dark:rgba(255,255,255,0.10);
+  --text:#1B222B;
+  --text-dim:#5B6774;
+  --text-onink:#EAF1F5;
+  --text-onink-dim:#9FB0BC;
+  --radius:18px;
+  --serif-num: "JetBrains Mono", monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:"Inter", -apple-system, sans-serif;
+  color:var(--text);
+  background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{
+  font-family:"Manrope", sans-serif;
+  margin:0;
+  letter-spacing:-0.01em;
+  color:inherit;
+}
+p{margin:0;}
+img{display:block;max-width:100%;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+@media (max-width:640px){ .wrap{padding:0 20px;} }
+
+/* ---------- utility: circuit node divider ---------- */
+.node-divider{
+  display:flex;align-items:center;gap:14px;
+  color:var(--text-dim);
+  margin:0 0 20px;
+}
+.node-divider .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--teal);flex-shrink:0;
+  box-shadow:0 0 0 3px var(--teal-dim);
+}
+.node-divider .ln{height:1px;background:var(--line);flex:1;}
+.node-divider span.lbl{
+  font-family:var(--serif-num);
+  font-size:12.5px;
+  letter-spacing:0.02em;
+  white-space:nowrap;
+}
+.node-divider.on-dark .ln{background:var(--line-dark);}
+.node-divider.on-dark span.lbl{color:var(--text-onink-dim);}
+
+/* ================= HERO ================= */
+.hero{
+  position:relative;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(58,167,206,0.20), transparent 60%),
+    linear-gradient(180deg, var(--ink), var(--navy) 70%);
+  color:var(--text-onink);
+  padding:44px 0 0;
+  overflow:hidden;
+}
+@media (max-width:600px){ .hero{padding:28px 0 0;} }
+.circuit-bg{
+  position:absolute;inset:0;
+  opacity:0.5;
+  pointer-events:none;
+  background-image:
+    linear-gradient(var(--line-dark) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-dark) 1px, transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(ellipse 800px 500px at 50% 0%, black, transparent 75%);
+}
+.brandmark{
+  display:flex;align-items:center;gap:10px;
+  position:relative;z-index:2;
+}
+.brandmark img{width:30px;height:30px;border-radius:7px;}
+.brandmark span{font-family:"Manrope";font-weight:700;font-size:15.5px;letter-spacing:-0.005em;}
+
+.hero-head{
+  position:relative;z-index:2;
+  max-width:640px;
+  margin-top:38px;
+}
+@media (max-width:600px){ .hero-head{margin-top:24px;} }
+.hero-head h1{
+  font-size:clamp(32px,5vw,46px);
+  font-weight:800;
+  line-height:1.12;
+}
+.hero-head p{
+  margin-top:18px;
+  font-size:17px;
+  line-height:1.6;
+  color:var(--text-onink-dim);
+  max-width:520px;
+}
+.fact-row{
+  position:relative;z-index:2;
+  display:flex;flex-wrap:wrap;gap:10px;
+  margin-top:28px;
+}
+.fact-chip{
+  font-family:var(--serif-num);
+  font-size:12.5px;
+  color:var(--teal-bright);
+  border:1px solid rgba(111,203,238,0.35);
+  background:rgba(111,203,238,0.08);
+  padding:7px 12px;
+  border-radius:8px;
+  white-space:nowrap;
+}
+
+.phones-stage{
+  position:relative;z-index:2;
+  margin-top:46px;
+  padding-bottom:0;
+  display:flex;
+  justify-content:center;
+  gap:0;
+}
+.phone{
+  width:198px;
+  border-radius:34px;
+  background:#0b0d10;
+  padding:9px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+  flex-shrink:0;
+}
+.phone .screen{
+  position:relative;
+  border-radius:26px;
+  overflow:hidden;
+  aspect-ratio:393/852;
+  background:#F3F5F7;
+}
+.phone .screen img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.phone .notch{
+  position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  width:34%;height:16px;background:#0b0d10;border-radius:10px;z-index:3;
+}
+.phone.p-left{ transform:rotate(-7deg) translate(18px, 26px); }
+.phone.p-right{ transform:rotate(7deg) translate(-18px, 26px); }
+.phone.p-mid{ position:relative; z-index:2; }
+@media (max-width:760px){
+  .phones-stage{transform:scale(0.82);margin-top:20px;}
+}
+@media (max-width:520px){
+  .phone{width:158px;}
+  .phone.p-left{display:none;}
+  .phone.p-right{display:none;}
+  .phones-stage{transform:none;}
+}
+
+.hero-fade{height:64px;background:linear-gradient(180deg, transparent, var(--paper));position:relative;z-index:2;margin-top:-1px;}
+
+/* ================= SECTION GENERIC ================= */
+section{padding:78px 0;}
+@media (max-width:600px){ section{padding:52px 0;} }
+.eyebrow-none{ } /* intentionally no all-caps eyebrow labels, per design guidance */
+.section-head h2{
+  font-size:clamp(26px,3.4vw,34px);
+  font-weight:800;
+  max-width:640px;
+}
+.section-head p.lede{
+  margin-top:14px;
+  font-size:16px;
+  color:var(--text-dim);
+  max-width:560px;
+  line-height:1.6;
+}
+
+/* ================= ADVANTAGES (datasheet list) ================= */
+.spec-list{margin-top:34px;border-top:1px solid var(--line);}
+.spec-row{
+  display:grid;
+  grid-template-columns:230px 1fr;
+  gap:28px;
+  padding:22px 0;
+  border-bottom:1px solid var(--line);
+}
+.spec-row .k{
+  font-family:"Manrope";
+  font-weight:700;
+  font-size:16.5px;
+  color:var(--text);
+}
+.spec-row .k .idx{
+  font-family:var(--serif-num);
+  font-size:12.5px;
+  color:var(--teal);
+  display:block;
+  margin-bottom:6px;
+  font-weight:500;
+}
+.spec-row .v{
+  font-size:15px;
+  line-height:1.65;
+  color:var(--text-dim);
+  max-width:560px;
+}
+@media (max-width:680px){
+  .spec-row{grid-template-columns:1fr;gap:6px;}
+}
+
+/* ================= INSTALL STEPS ================= */
+.install-panel{
+  margin-top:34px;
+  background:var(--ink);
+  border-radius:24px;
+  padding:40px;
+  color:var(--text-onink);
+  position:relative;
+  overflow:hidden;
+}
+@media (max-width:600px){ .install-panel{padding:26px 20px;border-radius:18px;} }
+.install-panel + .install-panel{margin-top:20px;}
+.platform-label{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:9px;
+  font-family:"Manrope";font-weight:700;font-size:14.5px;
+  color:var(--text-onink);
+  margin-bottom:22px;
+}
+.platform-label .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 0 3px var(--teal-dim);
+}
+.install-panel::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:linear-gradient(var(--line-dark) 1px, transparent 1px), linear-gradient(90deg, var(--line-dark) 1px, transparent 1px);
+  background-size:40px 40px;
+  opacity:0.35;
+}
+.install-grid{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:26px;
+}
+@media (max-width:820px){ .install-grid{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:480px){ .install-grid{grid-template-columns:1fr;} }
+.install-step .chip{
+  width:46px;height:46px;border-radius:12px;
+  background:rgba(111,203,238,0.12);
+  border:1px solid rgba(111,203,238,0.3);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.install-step .chip svg{width:22px;height:22px;stroke:var(--teal-bright);}
+.install-step .num{
+  font-family:var(--serif-num);
+  font-size:12px;
+  color:var(--text-onink-dim);
+  margin-bottom:4px;
+  display:block;
+}
+.install-step h3{font-size:15.5px;font-weight:700;line-height:1.4;}
+.install-step p{font-size:13.5px;color:var(--text-onink-dim);margin-top:8px;line-height:1.55;}
+
+/* ================= WALKTHROUGH ================= */
+.walk-item{
+  display:grid;
+  grid-template-columns:150px 1fr;
+  gap:36px;
+  align-items:center;
+  padding:34px 0;
+  border-bottom:1px solid var(--line);
+}
+.walk-item:first-child{padding-top:0;}
+.walk-item:last-child{border-bottom:none;}
+.walk-item .shot{
+  width:150px;
+  border-radius:22px;
+  background:#0b0d10;
+  padding:7px;
+  box-shadow:0 18px 40px -18px rgba(20,30,40,0.35);
+}
+.walk-item .shot .in{
+  border-radius:16px;overflow:hidden;aspect-ratio:393/852;background:#F3F5F7;
+}
+.walk-item .shot img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.walk-copy .num{
+  font-family:var(--serif-num);
+  font-size:13px;color:var(--teal);
+  display:block;margin-bottom:8px;
+}
+.walk-copy h3{font-size:19px;font-weight:700;}
+.walk-copy p{margin-top:10px;font-size:15px;line-height:1.65;color:var(--text-dim);max-width:460px;}
+@media (max-width:600px){
+  .walk-item{grid-template-columns:124px 1fr;gap:18px;}
+  .walk-item .shot{width:124px;}
+}
+
+.downtime-callout{
+  margin-top:10px;
+  border:1px dashed var(--line);
+  border-radius:18px;
+  padding:26px;
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:24px;
+  align-items:center;
+  background:var(--paper-2);
+}
+.downtime-callout h4{font-size:15.5px;font-weight:700;}
+.downtime-callout p{font-size:14px;color:var(--text-dim);margin-top:6px;line-height:1.55;max-width:340px;}
+.downtime-callout .mini{width:96px;border-radius:16px;background:#0b0d10;padding:5px;}
+.downtime-callout .mini .in{border-radius:11px;overflow:hidden;aspect-ratio:393/852;}
+.downtime-callout .mini img{width:100%;height:100%;object-fit:cover;object-position:top;}
+@media (max-width:640px){
+  .downtime-callout{grid-template-columns:1fr;}
+  .downtime-callout .minis{display:flex;gap:14px;}
+}
+.downtime-callout .minis{display:contents;}
+@media (max-width:640px){ .downtime-callout .minis{display:flex;gap:14px;} }
+
+/* ================= RESULT TABLE ================= */
+.sheet-wrap{
+  margin-top:34px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  overflow-x:auto;
+  background:var(--paper-2);
+}
+table.sheet{
+  border-collapse:collapse;
+  width:100%;
+  min-width:760px;
+  font-family:var(--serif-num);
+  font-size:13px;
+}
+table.sheet th{
+  text-align:left;
+  font-family:"Inter";
+  font-weight:600;
+  font-size:12.5px;
+  color:var(--text-dim);
+  background:var(--paper);
+  padding:12px 16px;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+table.sheet td{
+  padding:12px 16px;
+  border-bottom:1px solid var(--line);
+  color:var(--text);
+  white-space:nowrap;
+}
+table.sheet tr:last-child td{border-bottom:none;}
+table.sheet td.dash{color:var(--text-dim);}
+table.sheet tr.downtime td{color:var(--text-dim);font-style:italic;}
+.sheet-caption{
+  font-size:13px;color:var(--text-dim);margin-top:12px;
+}
+@media (max-width:680px){
+  .sheet-wrap{overflow-x:visible;border:none;background:none;}
+  table.sheet{min-width:0;display:block;}
+  table.sheet thead{display:none;}
+  table.sheet tbody{display:flex;flex-direction:column;gap:12px;}
+  table.sheet tr{
+    display:block;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:6px 16px;
+  }
+  table.sheet td{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:16px;
+    white-space:normal;
+    text-align:right;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+  }
+  table.sheet td:last-child{border-bottom:none;}
+  table.sheet td::before{
+    content:attr(data-label);
+    font-family:"Inter";
+    font-size:12.5px;
+    color:var(--text-dim);
+    text-align:left;
+    flex-shrink:0;
+  }
+}
+
+/* ================= ROADMAP ================= */
+.roadmap{
+  margin-top:40px;
+  position:relative;
+  padding-left:28px;
+}
+.roadmap::before{
+  content:"";
+  position:absolute;left:3px;top:6px;bottom:6px;
+  width:2px;
+  background:repeating-linear-gradient(180deg, var(--teal) 0 6px, transparent 6px 12px);
+}
+.road-node{position:relative;padding-bottom:34px;}
+.road-node:last-child{padding-bottom:0;}
+.road-node::before{
+  content:"";
+  position:absolute;left:-28px;top:4px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 0 4px var(--teal-dim);
+}
+.road-node h3{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.road-node p{margin-top:8px;font-size:14.5px;line-height:1.65;color:var(--text-dim);max-width:540px;}
+.tag-soon{
+  font-family:var(--serif-num);
+  font-size:11px;
+  color:#8a5a12;
+  background:rgba(224,162,61,0.18);
+  border:1px solid rgba(224,162,61,0.4);
+  padding:3px 8px;
+  border-radius:6px;
+}
+.roadmap-note{
+  margin-top:30px;
+  padding:20px 22px;
+  border-radius:14px;
+  background:var(--paper-2);
+  border:1px solid var(--line);
+  font-size:14.5px;
+  line-height:1.65;
+  color:var(--text-dim);
+}
+
+/* ================= FOOTER ================= */
+footer{
+  background:var(--ink);
+  color:var(--text-onink-dim);
+  padding:40px 0;
+}
+footer .row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+@media (max-width:480px){ footer .row{flex-direction:column;align-items:flex-start;} }
+footer .brandmark span{color:var(--text-onink);}
+footer .meta{font-family:var(--serif-num);font-size:12px;}
+
+.dark-section{background:var(--ink);color:var(--text-onink);}
+.dark-section .section-head p.lede{color:var(--text-onink-dim);}
+.dark-section .section-head h2{color:var(--text-onink);}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="circuit-bg"></div>
+  <div class="wrap">
+    <div class="brandmark">
+      <img src="assets/img/mark.png" alt="">
+      <span>ПрофЭлектро</span>
+    </div>
+    <div class="hero-head">
+      <h1>Наряд заполняется на объекте, а не по памяти после смены</h1>
+      <p>Слесарь открывает приложение на телефоне, выбирает заказ и оборудование — данные тут же уходят в общую Google Таблицу, без бумаги и переноса вручную.</p>
+    </div>
+    <div class="fact-row">
+      <span class="fact-chip">работает офлайн</span>
+      <span class="fact-chip">синхронизация с Google Таблицами</span>
+      <span class="fact-chip">без App Store и обновлений вручную</span>
+      <span class="fact-chip">фирменный стиль ПрофЭлектро</span>
+    </div>
+    <div class="phones-stage">
+      <div class="phone p-left">
+        <div class="notch"></div>
+        <div class="screen"><img src="assets/img/order-list.png" alt=""></div>
+      </div>
+      <div class="phone p-mid">
+        <div class="notch"></div>
+        <div class="screen"><img src="assets/img/confirm.png" alt=""></div>
+      </div>
+      <div class="phone p-right">
+        <div class="notch"></div>
+        <div class="screen"><img src="assets/img/done.png" alt=""></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-fade"></div>
+</div>
+
+<!-- ================= ADVANTAGES ================= -->
+<section>
+  <div class="wrap">
+    <div class="node-divider"><div class="dot"></div><div class="ln"></div><span class="lbl">01 — ЧТО ЭТО МЕНЯЕТ</span></div>
+    <div class="section-head">
+      <h2>Восемь вещей, которые перестают быть проблемой</h2>
+      <p class="lede">Приложение сделано под конкретный процесс ПрофЭлектро — от списка заказов до записи в таблицу.</p>
+    </div>
+    <div class="spec-list">
+      
+      <div class="spec-row">
+        <div class="k"><span class="idx">01</span>Наряд — на месте</div>
+        <div class="v">Слесарь заполняет операцию сразу на объекте, а не восстанавливает по памяти в конце смены — меньше ошибок и забытых деталей.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">02</span>Заказы — из вашей таблицы</div>
+        <div class="v">Список заказов и оборудования подтягивается прямо из листа «Сводная таблица заказов ПрофЭлектро» — ничего не дублируется вручную.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">03</span>Работает без интернета</div>
+        <div class="v">Если связи нет, заявка сохраняется на телефоне и уходит в таблицу сама, как только сеть появится — работа не останавливается.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">04</span>Без задвоения записей</div>
+        <div class="v">При слабом сигнале одна и та же операция не запишется в таблицу дважды, даже если отправка повторилась несколько раз.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">05</span>Всё — в одной таблице</div>
+        <div class="v">ФИО, должность, дата, оборудование, операция и время сразу попадают в лист «Заказ-наряд» — переносить вручную нечего.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">06</span>Простой — в два касания</div>
+        <div class="v">Для «Производственного простоя» не нужно выбирать оборудование и операцию — сразу время, а в таблице проставляется прочерк.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">07</span>Фирменный стиль</div>
+        <div class="v">Все экраны — в цветах и с логотипом ПрофЭлектро, как часть общего образа компании.</div>
+      </div>
+      <div class="spec-row">
+        <div class="k"><span class="idx">08</span>Без магазинов приложений</div>
+        <div class="v">Ссылка на приложение открывается в браузере и добавляется на главный экран — доработки происходят на сервере, без App Store, Google Play и переустановки.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSTALL ================= -->
+<section class="dark-section">
+  <div class="wrap">
+    <div class="node-divider on-dark"><div class="dot"></div><div class="ln"></div><span class="lbl">02 — УСТАНОВКА</span></div>
+    <div class="section-head">
+      <h2>Установка на главный экран</h2>
+      <p class="lede">Приложение не публикуется в App Store и Google Play — оно открывается по ссылке и добавляется на главный экран за четыре шага, а дальше выглядит и работает как обычное приложение.</p>
+    </div>
+    <div class="install-panel">
+      <div class="platform-label"><span class="dot"></span>iPhone · Safari</div>
+      <div class="install-grid">
+        
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M3.8 12h16.4M12 3.6c2.2 2.3 3.4 5.2 3.4 8.4s-1.2 6.1-3.4 8.4c-2.2-2.3-3.4-5.2-3.4-8.4S9.8 5.9 12 3.6z"/></svg></div>
+          <span class="num">01</span>
+          <h3>Откройте ссылку в Safari</h3>
+          <p>На iPhone это обязательно должен быть Safari — другие браузеры не дают добавить сайт на главный экран.</p>
+        </div>
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12.2"/><path d="M8 6.6 12 3l4 3.6"/><path d="M5.5 11v7.4c0 .9.7 1.6 1.6 1.6h9.8c.9 0 1.6-.7 1.6-1.6V11"/></svg></div>
+          <span class="num">02</span>
+          <h3>Нажмите «Поделиться»</h3>
+          <p>Значок со стрелкой вверх в нижней панели браузера.</p>
+        </div>
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="4.2"/><path d="M12 8v8M8 12h8"/></svg></div>
+          <span class="num">03</span>
+          <h3>Выберите «На экран “Домой”»</h3>
+          <p>Пункт с иконкой плюс в открывшемся списке действий.</p>
+        </div>
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.6"/><path d="M9.3 12l2 2 3.4-4"/></svg></div>
+          <span class="num">04</span>
+          <h3>Подтвердите добавление</h3>
+          <p>Иконка ПрофЭлектро появится на главном экране и будет открываться как обычное приложение.</p>
+        </div>
+      </div>
+    </div>
+    <div class="install-panel">
+      <div class="platform-label"><span class="dot"></span>Android · Chrome</div>
+      <div class="install-grid">
+        
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M3.8 12h16.4M12 3.6c2.2 2.3 3.4 5.2 3.4 8.4s-1.2 6.1-3.4 8.4c-2.2-2.3-3.4-5.2-3.4-8.4S9.8 5.9 12 3.6z"/></svg></div>
+          <span class="num">01</span>
+          <h3>Откройте ссылку в Chrome</h3>
+          <p>Подходит Chrome или любой другой браузер на Chromium.</p>
+        </div>
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5.3" r="1.7" fill="#6FCBEE"/><circle cx="12" cy="12" r="1.7" fill="#6FCBEE"/><circle cx="12" cy="18.7" r="1.7" fill="#6FCBEE"/></svg></div>
+          <span class="num">02</span>
+          <h3>Откройте меню браузера</h3>
+          <p>Три точки в правом верхнем углу экрана.</p>
+        </div>
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v10.6"/><path d="M8 10.6l4 3.9 4-3.9"/><path d="M4.5 16.5v2.9c0 .9.7 1.6 1.6 1.6h11.8c.9 0 1.6-.7 1.6-1.6v-2.9"/></svg></div>
+          <span class="num">03</span>
+          <h3>«Установить приложение» / «Добавить на главный экран»</h3>
+          <p>Формулировка пункта меню отличается в зависимости от версии Chrome — подходит любая из них.</p>
+        </div>
+        <div class="install-step">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.6"/><path d="M9.3 12l2 2 3.4-4"/></svg></div>
+          <span class="num">04</span>
+          <h3>Подтвердите установку</h3>
+          <p>Иконка ПрофЭлектро появится на главном экране и в списке приложений.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WALKTHROUGH ================= -->
+<section>
+  <div class="wrap">
+    <div class="node-divider"><div class="dot"></div><div class="ln"></div><span class="lbl">03 — ЗАПОЛНЕНИЕ НАРЯДА</span></div>
+    <div class="section-head">
+      <h2>От регистрации до записи в таблицу — восемь шагов</h2>
+      <p class="lede">Каждый шаг — один экран с одним решением. Заполнение реальной операции занимает меньше минуты.</p>
+    </div>
+    <div class="walk-list">
+      
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/register.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">01</span>
+          <h3>Регистрация</h3>
+          <p>ФИО и должность указываются один раз — дальше подставляются автоматически на каждом наряде.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/date.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">02</span>
+          <h3>Дата</h3>
+          <p>По умолчанию — сегодняшнее число, при необходимости его можно поправить вручную.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/order-selected.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">03</span>
+          <h3>Номер заказа</h3>
+          <p>Список подтягивается из Google Таблицы и всегда актуален — завершённые заказы в нём не показываются.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/equipment-selected.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">04</span>
+          <h3>Оборудование</h3>
+          <p>Список зависит от выбранного заказа — показывается только то, что реально в него входит.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/operation.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">05</span>
+          <h3>Операция</h3>
+          <p>Короткое описание того, что сделано — своими словами, без строгого формата.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/time.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">06</span>
+          <h3>Время выполнения</h3>
+          <p>Затраченное время в часах на всю операцию.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/confirm.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">07</span>
+          <h3>Проверка</h3>
+          <p>Все данные — на одном экране, можно свериться перед отправкой.</p>
+        </div>
+      </div>
+      <div class="walk-item">
+        <div class="shot"><div class="in"><img src="assets/img/done.png" alt=""></div></div>
+        <div class="walk-copy">
+          <span class="num">08</span>
+          <h3>Готово</h3>
+          <p>Запись уже в таблице. Можно сразу добавить следующую операцию по этому наряду или закончить.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="downtime-callout">
+      <div>
+        <h4>Быстрый вариант — «Производственный простой»</h4>
+        <p>Если по заказу нет работы, эта строка в списке заказов пропускает выбор оборудования и операции — сразу к времени. В таблице «Оборудование» и «Операция» отмечаются прочерком.</p>
+      </div>
+      <div class="minis">
+        <div class="mini"><div class="in"><img src="assets/img/downtime-selected.png" alt=""></div></div>
+        <div class="mini"><div class="in"><img src="assets/img/downtime-time.png" alt=""></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULT ================= -->
+<section>
+  <div class="wrap">
+    <div class="node-divider"><div class="dot"></div><div class="ln"></div><span class="lbl">04 — РЕЗУЛЬТАТ</span></div>
+    <div class="section-head">
+      <h2>Всё, что заполнено на телефонах, — в одной таблице</h2>
+      <p class="lede">Иллюстративный пример листа «Заказ-наряд» — реальные строки выглядят так же, только с настоящими операциями.</p>
+    </div>
+    <div class="sheet-wrap">
+      <table class="sheet">
+        <thead>
+          <tr>
+            <th>ФИО</th><th>Должность</th><th>Дата</th><th>Номер заказа</th><th>Оборудование</th><th>Операция</th><th>Время</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="ФИО">Иванов И.И.</td><td data-label="Должность">Слесарь-электромонтажник 5 разряда</td><td data-label="Дата">15.09.2026</td><td data-label="Номер заказа">Заказ 7254</td><td data-label="Оборудование">ЩУ-1 (заказ 7254)</td><td data-label="Операция">Электромонтаж монтажной панели ЩСН</td><td data-label="Время">11</td>
+          </tr>
+          <tr>
+            <td data-label="ФИО">Петров П.П.</td><td data-label="Должность">Слесарь-электромонтажник 4 разряда</td><td data-label="Дата">15.09.2026</td><td data-label="Номер заказа">Заказ 7254</td><td data-label="Оборудование">ШП-2 (заказ 7254)</td><td data-label="Операция">Сборка каркаса и установка автоматов</td><td data-label="Время">6</td>
+          </tr>
+          <tr>
+            <td data-label="ФИО">Иванов И.И.</td><td data-label="Должность">Слесарь-электромонтажник 5 разряда</td><td data-label="Дата">16.09.2026</td><td data-label="Номер заказа">Заказ 7385</td><td data-label="Оборудование">ЩУ (заказ 7385)</td><td data-label="Операция">Разводка силовых кабелей</td><td data-label="Время">8</td>
+          </tr>
+          <tr class="downtime">
+            <td data-label="ФИО">Сидоров С.С.</td><td data-label="Должность">Слесарь-электромонтажник 3 разряда</td><td data-label="Дата">16.09.2026</td><td data-label="Номер заказа">Производственный простой</td><td data-label="Оборудование" class="dash">—</td><td data-label="Операция" class="dash">—</td><td data-label="Время">4</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sheet-caption">Пример условный — цифры и фамилии не относятся к реальным заказам.</div>
+  </div>
+</section>
+
+<!-- ================= ROADMAP ================= -->
+<section>
+  <div class="wrap">
+    <div class="node-divider"><div class="dot"></div><div class="ln"></div><span class="lbl">05 — ЧТО ДАЛЬШЕ</span></div>
+    <div class="section-head">
+      <h2>Приложение развивается вместе с процессом</h2>
+      <p class="lede">Текущая версия — рабочая база. Дальше её можно нарастить, не останавливая работу и не переустанавливая приложение у людей.</p>
+    </div>
+    <div class="roadmap">
+      <div class="road-node">
+        <h3>Сквозное отслеживание каждой операции <span class="tag-soon">в разработке</span></h3>
+        <p>Каждая запись уже содержит исполнителя, время и оборудование — следующий шаг - связать их в историю по каждому узлу: кто и когда выполнял операции над конкретным щитом от начала до отгрузки.</p>
+      </div>
+      <div class="road-node">
+        <h3>Мониторинг сборки оборудования в реальном времени</h3>
+        <p>На основе тех же данных — дашборд по заказам: какое оборудование в работе, какое готово, сколько часов уже вложено, без ручного опроса участков.</p>
+      </div>
+    </div>
+    <div class="roadmap-note">
+      Приложение уже не раз дорабатывалось по ходу использования — ускорение загрузки списка заказов, защита от повторной записи при слабой связи, новый сценарий «Производственный простой» — и каждый раз это происходило без переустановки у сотрудников и без остановки работы.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <div class="brandmark">
+        <img src="assets/img/mark.png" alt="">
+        <span>ПрофЭлектро</span>
+      </div>
+      <div class="meta">ЗАКАЗ-НАРЯД · ВНУТРЕННЕЕ ПРИЛОЖЕНИЕ</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
